@@ -1,0 +1,20 @@
+[package]
+name = "e2ee-kit"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+license = "MIT"
+description = "Small, easy end-to-end encryption: X25519 sessions, ChaCha20-Poly1305 messages, Argon2id secret boxes"
+repository = "https://github.com/jjw/e2ee-kit"
+readme = "README.md"
+keywords = ["e2ee", "encryption", "x25519", "chacha20poly1305", "argon2"]
+categories = ["cryptography"]
+
+[dependencies]
+x25519-dalek = { version = "3.0", features = ["static_secrets", "getrandom"] }
+chacha20poly1305 = "0.11"
+argon2 = { version = "0.5", default-features = false, features = ["alloc"] }
+hkdf = "0.13"
+sha2 = "0.11"
+getrandom = "0.4"
+zeroize = "1"
