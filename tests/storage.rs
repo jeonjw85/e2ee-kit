@@ -17,7 +17,6 @@ fn keypair_roundtrip() {
         keypair.to_secret_bytes().as_slice()
     );
 
-    // A restored keypair is functionally identical: it derives the same sessions.
     let peer = Keypair::generate();
     let a = e2ee_kit::Session::establish(&keypair, peer.public_key(), e2ee_kit::Role::Initiator)
         .unwrap();

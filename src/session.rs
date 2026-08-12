@@ -42,8 +42,6 @@ impl Session {
     pub fn establish(our: &Keypair, their: PublicKey, role: Role) -> Result<Session, Error> {
         let shared_secret = our.static_secret().diffie_hellman(their.as_inner());
 
-        // Reject degenerate shared secrets (RFC 8731 section 3).
-        // Constant-time fold: no early exit on secret data.
         let mut acc = 0u8;
         for byte in shared_secret.as_bytes() {
             acc |= byte;
@@ -152,7 +150,6 @@ mod tests {
         let eve = Keypair::generate();
 
         let alice_to_bob = Session::establish(&alice, bob.public_key(), Role::Initiator).unwrap();
-        // Eve pairs with Alice instead of Bob.
         let eve_side = Session::establish(&eve, alice.public_key(), Role::Responder).unwrap();
 
         let m = alice_to_bob.seal(b"private").unwrap();
@@ -162,7 +159,6 @@ mod tests {
     #[test]
     fn all_zero_shared_secret_rejected() {
         let alice = Keypair::generate();
-        // The all-zero public key is a low-order point: DH yields all-zero.
         let low_order = PublicKey::from_bytes([0u8; 32]).unwrap();
         let result = Session::establish(&alice, low_order, Role::Initiator);
         assert!(matches!(result, Err(Error::InvalidPublicKey)));
@@ -170,7 +166,6 @@ mod tests {
 
     #[test]
     fn rfc7748_shared_secret() {
-        // RFC 7748 section 6.1: Alice and Bob's static keys.
         let alice = Keypair::from_secret_bytes(hex32(
             "77076d0a7318a57d3c16c17251b26645df4c2f87ebc0992ab177fba51db92c2a",
         ));

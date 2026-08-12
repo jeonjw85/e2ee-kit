@@ -18,14 +18,11 @@ pub(crate) const MIN_BLOB_LEN: usize = HEADER_LEN + TAG_LEN;
 /// Passwords shorter than this are rejected outright.
 pub(crate) const MIN_PASSWORD_LEN: usize = 8;
 
-// Fixed Argon2id parameters for v0.1 (OWASP recommended minimum).
-pub(crate) const M_COST: u32 = 19456; // KiB
+pub(crate) const M_COST: u32 = 19456;
 pub(crate) const T_COST: u32 = 2;
 pub(crate) const P_COST: u8 = 1;
 
-// Sanity bounds on stored parameters, enforced before deriving. They stop a
-// malicious blob from burning unbounded CPU/memory on open.
-const MAX_M_COST: u32 = 1 << 21; // 2 GiB
+const MAX_M_COST: u32 = 1 << 21;
 const MAX_T_COST: u32 = 64;
 const MAX_P_COST: u8 = 16;
 
@@ -92,7 +89,6 @@ impl SecretBox {
     /// blob was tampered with; the two cases are intentionally
     /// indistinguishable.
     pub fn open(blob: &[u8], password: &[u8]) -> Result<Vec<u8>, Error> {
-        // All structural checks happen before any (expensive) key derivation.
         if blob.len() < MIN_BLOB_LEN {
             return Err(Error::InvalidBlob);
         }
@@ -206,21 +202,21 @@ mod tests {
     fn out_of_range_params_fail_before_derivation() {
         let mut blob = SecretBox::seal(PASSWORD, b"x").unwrap();
 
-        blob[0] = 0x02; // bad version
+        blob[0] = 0x02;
         assert_eq!(SecretBox::open(&blob, PASSWORD), Err(Error::InvalidBlob));
         blob[0] = VERSION;
 
-        blob[1..5].copy_from_slice(&u32::MAX.to_be_bytes()); // m_cost too large
+        blob[1..5].copy_from_slice(&u32::MAX.to_be_bytes());
         assert_eq!(SecretBox::open(&blob, PASSWORD), Err(Error::InvalidBlob));
         blob[1..5].copy_from_slice(&M_COST.to_be_bytes());
 
-        blob[5..9].copy_from_slice(&u32::MAX.to_be_bytes()); // t_cost too large
+        blob[5..9].copy_from_slice(&u32::MAX.to_be_bytes());
         assert_eq!(SecretBox::open(&blob, PASSWORD), Err(Error::InvalidBlob));
         blob[5..9].copy_from_slice(&T_COST.to_be_bytes());
 
-        blob[9] = 0; // p_cost too small
+        blob[9] = 0;
         assert_eq!(SecretBox::open(&blob, PASSWORD), Err(Error::InvalidBlob));
-        blob[9] = MAX_P_COST + 1; // p_cost too large
+        blob[9] = MAX_P_COST + 1;
         assert_eq!(SecretBox::open(&blob, PASSWORD), Err(Error::InvalidBlob));
     }
 

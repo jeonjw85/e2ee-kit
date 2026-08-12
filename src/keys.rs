@@ -69,7 +69,6 @@ impl Keypair {
     /// The same input always yields the same keypair, so keys can be stored
     /// and reloaded (see [`crate::encrypt_keypair`]).
     pub fn from_secret_bytes(secret: [u8; 32]) -> Keypair {
-        // Zeroize the caller's copy once it has been consumed.
         let secret = Zeroizing::new(secret);
         let secret = StaticSecret::from(*secret);
         let public = PublicKey(X25519PublicKey::from(&secret));
@@ -153,7 +152,6 @@ mod tests {
 
     #[test]
     fn rfc7748_public_key_derivation() {
-        // RFC 7748 section 6.1, Alice's keys.
         let alice_secret =
             hex32("77076d0a7318a57d3c16c17251b26645df4c2f87ebc0992ab177fba51db92c2a");
         let alice_public =

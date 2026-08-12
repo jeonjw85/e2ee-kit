@@ -145,7 +145,6 @@ mod tests {
                 let mut tampered = envelope.clone();
                 tampered[offset] ^= 1 << bit;
                 let expected = if offset == 0 {
-                    // Any change to the version byte is rejected before AEAD.
                     Err(Error::InvalidBlob)
                 } else {
                     Err(Error::DecryptionFailed)

@@ -22,7 +22,6 @@ pub(crate) fn derive_session_keys(
     let hk = Hkdf::<Sha256>::new(Some(&salt[..]), shared_secret);
     let mut k_i2r = [0u8; 32];
     let mut k_r2i = [0u8; 32];
-    // 32 bytes is always a valid HKDF-SHA256 expansion length (max 255 * 32).
     hk.expand(INFO_INITIATOR_TO_RESPONDER, &mut k_i2r)
         .expect("32-byte HKDF output is valid");
     hk.expand(INFO_RESPONDER_TO_INITIATOR, &mut k_r2i)
@@ -42,7 +41,6 @@ mod tests {
 
     #[test]
     fn rfc5869_sha256_a1() {
-        // RFC 5869 appendix A.1, basic test case with SHA-256.
         let ikm = hex("0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b");
         let salt = hex("000102030405060708090a0b0c");
         let info = hex("f0f1f2f3f4f5f6f7f8f9");
@@ -65,8 +63,6 @@ mod tests {
 
     #[test]
     fn golden_session_keys() {
-        // Fixed inputs lock the salt construction and info strings: any
-        // accidental change to them breaks this vector.
         let ss = [0x11u8; 32];
         let initiator_pub = [0x22u8; 32];
         let responder_pub = [0x33u8; 32];
@@ -75,12 +71,10 @@ mod tests {
         assert_eq!(k_i2r, GOLDEN_K_I2R);
         assert_eq!(k_r2i, GOLDEN_K_R2I);
 
-        // Deterministic, and the two directions differ.
         let again = derive_session_keys(&ss, &initiator_pub, &responder_pub);
         assert_eq!(again, (k_i2r, k_r2i));
         assert_ne!(k_i2r, k_r2i);
 
-        // Salt order matters: swapping the roles changes the keys.
         let swapped = derive_session_keys(&ss, &responder_pub, &initiator_pub);
         assert_ne!(swapped, (k_i2r, k_r2i));
     }
