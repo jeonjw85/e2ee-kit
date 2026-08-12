@@ -1,3 +1,5 @@
+English | [한국어](README.ko.md)
+
 # e2ee-kit
 
 Small, easy end-to-end encryption for Rust.
@@ -125,4 +127,4 @@ Rust 1.85, edition 2024. std-only in v0.1; `no_std` + `alloc` may come later.
 
 ## License
 
-MIT — see [LICENSE-MIT](LICENSE-MIT).
+MIT - [LICENSE-MIT](LICENSE-MIT)
