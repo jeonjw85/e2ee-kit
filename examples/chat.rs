@@ -24,18 +24,30 @@ fn main() -> Result<(), e2ee_kit::Error> {
 
     let plaintext = b"hello bob, this is a secret";
     let envelope = alice_side.seal(plaintext)?;
-    println!("\n[Alice -> Bob] plaintext : {}", String::from_utf8_lossy(plaintext));
+    println!(
+        "\n[Alice -> Bob] plaintext : {}",
+        String::from_utf8_lossy(plaintext)
+    );
     println!("[Alice -> Bob] envelope  : {} bytes", envelope.len());
     println!("[Alice -> Bob] hex       : {}", hex(&envelope));
 
     let opened = bob_side.open(&envelope)?;
-    println!("[Bob decrypts]           : {}", String::from_utf8_lossy(&opened));
+    println!(
+        "[Bob decrypts]           : {}",
+        String::from_utf8_lossy(&opened)
+    );
 
     let reply = b"hi alice, got it";
     let envelope2 = bob_side.seal(reply)?;
     let opened2 = alice_side.open(&envelope2)?;
-    println!("\n[Bob -> Alice] plaintext : {}", String::from_utf8_lossy(reply));
-    println!("[Alice decrypts]         : {}", String::from_utf8_lossy(&opened2));
+    println!(
+        "\n[Bob -> Alice] plaintext : {}",
+        String::from_utf8_lossy(reply)
+    );
+    println!(
+        "[Alice decrypts]         : {}",
+        String::from_utf8_lossy(&opened2)
+    );
 
     let mut tampered = envelope.clone();
     let last = tampered.len() - 1;

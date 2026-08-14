@@ -15,7 +15,9 @@ fn hex(bytes: &[u8]) -> String {
 
 fn main() -> Result<(), e2ee_kit::Error> {
     let mut args = std::env::args().skip(1);
-    let password = args.next().unwrap_or_else(|| "correct horse battery staple".into());
+    let password = args
+        .next()
+        .unwrap_or_else(|| "correct horse battery staple".into());
     let message = args.next().unwrap_or_else(|| "data at rest".into());
 
     println!("password : {password}");
