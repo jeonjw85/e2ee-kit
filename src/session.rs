@@ -158,10 +158,10 @@ mod tests {
 
     #[test]
     fn all_zero_shared_secret_rejected() {
-        let alice = Keypair::generate();
-        let low_order = PublicKey::from_bytes([0u8; 32]).unwrap();
-        let result = Session::establish(&alice, low_order, Role::Initiator);
-        assert!(matches!(result, Err(Error::InvalidPublicKey)));
+        assert!(matches!(
+            PublicKey::from_bytes([0u8; 32]),
+            Err(Error::InvalidPublicKey)
+        ));
     }
 
     #[test]
